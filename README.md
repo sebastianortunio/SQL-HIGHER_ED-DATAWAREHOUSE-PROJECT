@@ -47,6 +47,8 @@ The pipeline ingests operational datasets from CSV files into a **Bronze (raw)**
 
 **Purpose:** Store source datasets as-is.
 
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/c79362be-40dd-4885-a987-03867aded38f" />
+
 **Bronze Tables**
 - `bronze.staff`
 - `bronze.terms`
