@@ -6,7 +6,8 @@ The pipeline ingests operational datasets from CSV files into a **Bronze (raw)**
 
 # Architecture
 
-<img width="929" height="552" alt="image" src="https://github.com/user-attachments/assets/9e725a26-6b95-406e-9df0-beeaf6350d2b" />
+<img width="932" height="520" alt="image" src="https://github.com/user-attachments/assets/80f47ae8-3e30-4c21-9f9f-ee46236b8d40" />
+
 
 **Database:** `College_DataWarehouse` (SQL Server)
 
