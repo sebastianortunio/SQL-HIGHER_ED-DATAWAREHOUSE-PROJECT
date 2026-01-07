@@ -6,7 +6,8 @@ The pipeline ingests operational datasets from CSV files into a **Bronze (raw)**
 
 # Architecture
 
-<img width="932" height="520" alt="image" src="https://github.com/user-attachments/assets/80f47ae8-3e30-4c21-9f9f-ee46236b8d40" />
+<img width="1522" height="909" alt="Not_Normalized_Database-NHSA ODP Data Warehouse drawio" src="https://github.com/user-attachments/assets/e329e9f0-1db4-4485-b32d-a08ea41b112a" />
+
 
 
 **Database:** `College_DataWarehouse` (SQL Server)
