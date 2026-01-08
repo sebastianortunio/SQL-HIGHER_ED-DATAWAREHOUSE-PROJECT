@@ -136,6 +136,7 @@ The Bronze load procedure expects CSV files with headers:
 - SSMS (SQL Server Management Studio)
 - SQL Server file access to the CSV directory (permissions required)
 - Database created: `College_DataWarehouse`
+- drawio for visualizations and diagrams
 
 ## Schemas
 The scripts create schemas automatically if missing:
@@ -143,9 +144,4 @@ The scripts create schemas automatically if missing:
 - `silver`
 - `gold`
 
-# How to Run
 
-## 1. Create database (if not already created)
-
-```sql
-CREATE DATABASE College_DataWarehouse;
