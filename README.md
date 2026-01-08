@@ -112,7 +112,8 @@ The pipeline ingests operational datasets from CSV files into a **Bronze (raw)**
 
 **Purpose:** Provide analytics-ready outputs for reporting and BI tools.
 
-<img width="1961" height="811" alt="10101" src="https://github.com/user-attachments/assets/8a9f35b9-9884-4fef-bd35-ad24a2b4ad41" />
+<img width="1584" height="647" alt="image" src="https://github.com/user-attachments/assets/e510ec95-3a04-41d1-a9ce-2fdc142c6a2f" />
+
 
 
 **Implementation:** Star-schema **views** built on Silver tables.
