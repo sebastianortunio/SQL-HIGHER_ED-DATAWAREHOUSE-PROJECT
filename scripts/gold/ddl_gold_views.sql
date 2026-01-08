@@ -35,7 +35,7 @@ GO
 
 CREATE VIEW gold.dim_students AS
 SELECT
-    ROW_NUMBER() OVER (ORDER BY s.student_id) AS student_key,   -- Surrogate key
+    ROW_NUMBER() OVER (ORDER BY s.student_id) AS student_key,   
     s.student_id,
     s.first_name,
     s.last_name,
@@ -146,14 +146,12 @@ GO
 
 CREATE VIEW gold.dim_program_learning_outcomes AS
 SELECT
-    ROW_NUMBER() OVER (ORDER BY plo.program_code, plo.plo_id) AS plo_key, -- Surrogate key
+    ROW_NUMBER() OVER (ORDER BY plo.program_code, plo.plo_id) AS plo_key,  -- surrogate (view-based)
     plo.plo_id,
-    plo.program_code,
     dp.program_key,
-    dp.program_name,
     plo.plo_description
 FROM silver.program_learning_outcomes plo
-LEFT JOIN gold.dim_programs dp
+JOIN gold.dim_programs dp
     ON plo.program_code = dp.program_code;
 GO
 
@@ -174,23 +172,18 @@ SELECT
     ds.student_key,
     dt.term_key,
     dp.program_key,
-    dsa.staff_key AS advisor_staff_key,
-
-    e.student_id,
-    e.term_code,
-    e.program_code,
+    dsa.staff_key AS advisor_staff_key,    
     e.enrollment_status,
     e.credits_attempted,
     e.credits_earned,
-    e.gpa_term,
-    e.academic_standing,
-    e.advisor_staff_id
+    e.gpa_term,               
+    e.academic_standing
 FROM silver.enrollments e
-LEFT JOIN gold.dim_students ds
+JOIN gold.dim_students ds
     ON e.student_id = ds.student_id
-LEFT JOIN gold.dim_terms dt
+JOIN gold.dim_terms dt
     ON e.term_code = dt.term_code
-LEFT JOIN gold.dim_programs dp
+JOIN gold.dim_programs dp
     ON e.program_code = dp.program_code
 LEFT JOIN gold.dim_staff dsa
     ON e.advisor_staff_id = dsa.staff_id;
@@ -205,30 +198,37 @@ IF OBJECT_ID('gold.fact_course_grades', 'V') IS NOT NULL
 GO
 
 CREATE VIEW gold.fact_course_grades AS
+WITH one_program_per_student_term AS (
+    SELECT
+        e.student_id,
+        e.term_code,
+        -- choose 1 program deterministically
+        MAX(e.program_code) AS program_code
+    FROM silver.enrollments e
+    GROUP BY e.student_id, e.term_code
+)
 SELECT
     ds.student_key,
     dt.term_key,
     dc.course_key,
     dp.program_key,
 
-    cg.student_id,
-    cg.term_code,
-    cg.course_id,
-    cg.section,
-    cg.grade,
-    cg.grade_point,
-    cg.attendance_rate,
-    cg.lms_logins,
-    cg.assignments_submitted_pct
+    cg.section,                    
+    cg.grade,                      
+    cg.grade_point,                
+    cg.attendance_rate,            
+    cg.lms_logins,                 
+    cg.assignments_submitted_pct   
 FROM silver.course_grades cg
-LEFT JOIN gold.dim_students ds
+JOIN gold.dim_students ds
     ON cg.student_id = ds.student_id
-LEFT JOIN gold.dim_terms dt
+JOIN gold.dim_terms dt
     ON cg.term_code = dt.term_code
-LEFT JOIN gold.dim_courses dc
+JOIN gold.dim_courses dc
     ON cg.course_id = dc.course_id
-LEFT JOIN silver.enrollments e
-    ON cg.student_id = e.student_id AND cg.term_code = e.term_code
+LEFT JOIN one_program_per_student_term e
+    ON cg.student_id = e.student_id
+   AND cg.term_code = e.term_code
 LEFT JOIN gold.dim_programs dp
     ON e.program_code = dp.program_code;
 GO
@@ -248,26 +248,22 @@ SELECT
     dp.program_key,
     dplo.plo_key,
 
-    ar.assessment_id,
-    ar.student_id,
-    ar.term_code,
-    ar.program_code,
-    ar.plo_id,
-    ar.assessment_type,
-    ar.score_0to4,
-    ar.assessment_date
+    ar.assessment_id,         
+    ar.assessment_type,       
+    ar.score_0to4,            
+    ar.assessment_date       
 FROM silver.assessment_results ar
-LEFT JOIN gold.dim_students ds
+JOIN gold.dim_students ds
     ON ar.student_id = ds.student_id
-LEFT JOIN gold.dim_terms dt
+JOIN gold.dim_terms dt
     ON ar.term_code = dt.term_code
-LEFT JOIN gold.dim_programs dp
+JOIN gold.dim_programs dp
     ON ar.program_code = dp.program_code
 LEFT JOIN gold.dim_program_learning_outcomes dplo
-    ON ar.program_code = dplo.program_code
+    ON dp.program_key = dplo.program_key
    AND ar.plo_id = dplo.plo_id;
-GO
 
+GO
 
 -- =============================================================================
 -- Create Fact: gold.fact_advising_interactions
@@ -282,28 +278,25 @@ SELECT
     dstaff.staff_key,
     dterm.term_key,
 
-    ai.interaction_id,
-    ai.student_id,
-    ai.interaction_date,
+    ai.interaction_id,        -- degenerate id
+    ai.interaction_date,      -- event attribute
     ai.channel,
     ai.reason,
     ai.outcome,
-    ai.staff_id,
     ai.follow_up_flag
 FROM silver.advising_interactions ai
-LEFT JOIN gold.dim_students ds
+JOIN gold.dim_students ds
     ON ai.student_id = ds.student_id
-LEFT JOIN gold.dim_staff dstaff
+JOIN gold.dim_staff dstaff
     ON ai.staff_id = dstaff.staff_id
 OUTER APPLY (
-    SELECT TOP 1 dt.term_key
+    SELECT TOP (1) dt.term_key
     FROM gold.dim_terms dt
     WHERE ai.interaction_date >= dt.start_date
       AND ai.interaction_date <= dt.end_date
     ORDER BY dt.start_date DESC
 ) dterm;
 GO
-
 
 -- =============================================================================
 -- Create Fact: gold.fact_survey_responses
@@ -343,3 +336,4 @@ LEFT JOIN silver.enrollments e
 LEFT JOIN gold.dim_programs dp
     ON e.program_code = dp.program_code;
 GO
+
