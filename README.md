@@ -76,6 +76,9 @@ The pipeline ingests operational datasets from CSV files into a **Bronze (raw)**
 
 ## Silver Layer
 
+<img width="1811" height="1181" alt="1122" src="https://github.com/user-attachments/assets/72b027a7-e0fb-4ce0-9103-9dac608056e6" />
+
+
 **Purpose:** Clean and conform data for reliable downstream reporting.
 
 ### Transformations Applied
