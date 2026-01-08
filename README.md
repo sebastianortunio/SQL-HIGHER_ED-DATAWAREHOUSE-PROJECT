@@ -76,7 +76,8 @@ The pipeline ingests operational datasets from CSV files into a **Bronze (raw)**
 
 ## Silver Layer
 
-<img width="2992" height="1361" alt="1122" src="https://github.com/user-attachments/assets/ecf34035-18a9-4824-8ea8-959834e0c674" />
+<img width="1259" height="762" alt="image" src="https://github.com/user-attachments/assets/fd5d6051-af38-48d8-8464-2779e2452d82" />
+
 
 
 
